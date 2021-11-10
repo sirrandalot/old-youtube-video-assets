@@ -1,0 +1,18 @@
+#Made by Philip Winter: https://www.youtube.com/user/Phil000002
+import bge
+import numpy as np
+cont = bge.logic.getCurrentController()
+own = cont.owner
+if 'hasGravity' in own and own['hasGravity'] is True:
+    scene = bge.logic.getCurrentScene()
+    G = 1.
+    F_total = np.zeros(3)
+    d_rel = np.zeros(3)
+    mass1 = own.mass
+    for obj in scene.objects:
+        if obj.name != own.name and 'hasGravity' in obj and obj['hasGravity'] is True:
+            d_rel = obj.worldPosition - own.worldPosition
+            d_rel_abs = np.sqrt(d_rel[0]*d_rel[0] + d_rel[1]*d_rel[1] + d_rel[2]*d_rel[2])
+            mass2 = obj.mass
+            F_total += G * mass1 * mass2 * d_rel / (d_rel_abs * d_rel_abs * d_rel_abs)  
+own.applyForce(F_total, 0) 
