@@ -1,0 +1,46 @@
+#Teleporting script for the game engine
+#Created in Blender 2.74 by sirrandalot
+#
+#For this script to run properly, the sensor object must
+#a boolean property named 'SENS' as well as 3 floats called 
+#'x', 'y', and 'z', the camera this is attached to
+#must have a radar sensor called 'Radar', and the player object
+#must be called 'Player'
+#
+#Feel free to modify this script to suit your needs,
+#this is the bare minimum required
+
+import bge
+
+#Get the nearest object
+def getNearestObjects(master, objects):
+    nearestObject = None
+    minDist = None
+    
+    for o in objects:
+        dist = master.getDistanceTo(o)
+        if(minDist is None or dist < minDist):
+            nearestObject = o
+            minDist = dist
+    return nearestObject
+
+def main():
+    #Get the current controller and owner
+    cont = bge.logic.getCurrentController()
+    own = cont.owner
+    
+    #Get the radar sensor
+    rad = cont.sensors['Radar']
+    
+    #Get the closest object
+    senseObject = getNearestObjects(own, rad.hitObjectList)
+    
+    #Get the scene and player
+    scene = bge.logic.getCurrentScene()
+    player = scene.objects['Player']
+    
+    #If the SENS property is true, teleport the player
+    if(rad.positive and senseObject["SENS"] == True):
+        player.worldPosition = [player.worldPosition[0]+senseObject['x'], player.worldPosition[1]+senseObject['y'], player.worldPosition[2]+senseObject['z']]
+
+main()
